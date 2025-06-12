@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MBTI Story Quest</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ede7f6, #e3f2fd);
+      margin: 0;
+      padding: 0;
+      color: #333;
+      text-align: center;
+    }
+    .container {
+      max-width: 700px;
+      margin: 60px auto;
+      padding: 30px;
+      background: #ffffffd9;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(5px);
+      animation: fadeIn 1s ease-in-out;
+      position: relative;
+      z-index: 2;
+    }
+    .background-blur {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80') center center/cover no-repeat;
+      filter: blur(15px) brightness(0.6);
+      z-index: 0;
+    }
+    .hidden { display: none; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h1 {
+      color: #6b46c1;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 6px rgba(255,255,255,0.8);
+    }
+    .story {
+      font-size: 1.2em;
+      margin-bottom: 25px;
+      line-height: 1.8;
+      color: #444;
+      text-shadow: 0 1px 4px rgba(255,255,255,0.7);
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .option-btn {
+      padding: 14px 28px;
+      font-size: 16px;
+      color: white;
+      background: linear-gradient(90deg, #6b46c1, #805ad5);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(107,70,193,0.3);
+    }
+    .option-btn:hover {
+      background: linear-gradient(90deg, #553c9a, #6b46c1);
+      transform: scale(1.04);
+    }
+    #result {
+      display: none;
+      font-size: 1.2em;
+      color: #2d3748;
+      margin-top: 20px;
+    }
+    .download-link {
+      display: inline-block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #6b46c1;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .download-link:hover {
+      color: #4c3392;
+    }
+    img.seed-image {
+      max-width: 300px;
+      margin-top: 20px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+    .share-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .share-buttons button {
+      background: #6b46c1;
+      border: none;
+      padding: 10px 18px;
+      font-size: 15px;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .share-buttons button:hover {
+      background: #4c3392;
+    }
+    .reset-btn {
+      margin-top: 20px;
+      padding: 10px 16px;
+      font-size: 14px;
+      background: #ccc;
+      color: #333;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+    .result-box {
+      padding: 40px 30px 32px 30px;
+      background: rgba(255,255,255,0.93);
+      border-radius: 22px;
+      box-shadow: 0 10px 32px rgba(107,70,193,0.10), 0 2px 8px #0001;
+      max-width: 540px;
+      margin: 70px auto 0 auto;
+      animation: fadeIn 1s;
+    }
+    .result-box h2 {
+      color: #2d1e5f;
+      font-size: 2.1em;
+      margin-bottom: 10px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    .result-box .mbti-type {
+      font-size: 1.1em;
+      color: #444;
+      margin-bottom: 10px;
+    }
+    .result-box .seed-type {
+      font-size: 1.4em;
+      color: #6b46c1;
+      font-weight: bold;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .result-box .desc {
+      color: #333;
+      font-size: 1.08em;
+      margin-bottom: 28px;
+      line-height: 1.7;
+    }
+    .result-box .share-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+    .result-box .share-buttons button {
+      background: linear-gradient(90deg, #6b46c1, #805ad5);
+      border: none;
+      padding: 12px 28px;
+      font-size: 1.08em;
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 2px 10px #6b46c133;
+      transition: background 0.3s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .result-box .share-buttons button:hover {
+      background: linear-gradient(90deg, #553c9a, #6b46c1);
+      transform: scale(1.04);
+    }
+    .result-box .option-btn {
+      margin-top: 10px;
+      width: 60%;
+      max-width: 220px;
+      font-size: 1.08em;
+    }
+    @media (max-width: 600px) {
+      .result-box { padding: 18px 5vw; }
+      .result-box .option-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div id="background" class="background-blur"></div>
+  <div id="intro" class="container">
+    <h1>🌱 ยินดีต้อนรับสู่โลกของ MBTI Story Quest 🌱</h1>
+    <p class="story">
+      ในโลกแห่งจินตนาการนี้... คุณจะได้พบกับการผจญภัยที่สะท้อนตัวตนลึก ๆ ของคุณ<br>
+      ผ่านเรื่องราวและตัวเลือกที่คุณเลือก คุณจะได้ค้นพบว่า "เมล็ดพันธุ์ในใจ" ของคุณเป็นแบบไหน 🌟<br><br>
+      พร้อมหรือยังที่จะเริ่มต้นการเดินทางครั้งนี้?
+    </p>
+    <button class="option-btn" onclick="startQuiz()">เริ่มการผจญภัย</button>
+  </div>
+  <div id="quiz" class="container hidden">
+    <div class="story" id="story"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        text: "คุณตื่นขึ้นมาในป่ามหัศจรรย์ที่เต็มไปด้วยแสงระยิบระยับ หน้าคุณมีทางเลือกต่างๆ คุณจะ...",
+        options: ["เดินเงียบๆ ทางซ้ายคนเดียว", "เข้าร่วมกลุ่มที่ลานขวา", "จินตนาการว่านี่คือโลกใหม่", "สำรวจรอยเท้าบนพื้น"],
+        scores: ["I", "E", "N", "S"]
+      },
+      {
+        text: "ขณะเดินไป คุณพบแม่น้ำขวางหน้า คุณจะ...",
+        options: ["ใช้แผนที่เพื่อข้าม", "เดาทางจากสัญชาตญาณ", "วิเคราะห์กระแสน้ำก่อนตัดสิน", "ช่วยเพื่อนข้ามน้ำตามความรู้สึก"],
+        scores: ["S", "N", "T", "F"]
+      },
+      {
+        text: "คุณพบกระท่อมร้างกลางป่า คุณจะ...",
+        options: ["เข้าไปสำรวจคนเดียว", "ชวนเพื่อนเข้าไปดูด้วยกัน", "ลองจินตนาการว่าเคยมีใครอาศัยอยู่", "สังเกตร่องรอยเพื่อหาเบาะแส"],
+        scores: ["I", "E", "N", "S"]
+      },
+      {
+        text: "คุณพบหนังสือเก่าในกระท่อม คุณจะ...",
+        options: ["อ่านเงียบๆ เพื่อตัวเอง", "อ่านออกเสียงให้คนอื่นฟัง", "ตั้งคำถามถึงความหมายลึกซึ้ง", "มองหาข้อมูลที่เป็นประโยชน์"],
+        scores: ["I", "E", "N", "S"]
+      },
+      {
+        text: "มีเสียงประหลาดดังขึ้นในค่ำคืน คุณจะ...",
+        options: ["วิเคราะห์เหตุผลเสียงนั้นมาจากอะไร", "รีบปลอบเพื่อนที่ตกใจ", "ลองจินตนาการว่าคือสัตว์วิเศษ", "เดินออกไปตรวจสอบอย่างรอบคอบ"],
+        scores: ["T", "F", "N", "S"]
+      },
+      {
+        text: "เช้าถัดมา คุณต้องเลือกทางระหว่างเขากับน้ำตก คุณจะ...",
+        options: ["เดินตามแผนที่ที่เตรียมไว้", "ปล่อยให้โชคนำทาง", "วางแผนแบบมีโครงสร้าง", "เปลี่ยนใจตามอารมณ์ปัจจุบัน"],
+        scores: ["J", "P", "T", "F"]
+      },
+      {
+        text: "คุณเจอเพื่อนทะเลาะกันระหว่างเดินทาง คุณจะ...",
+        options: ["ตัดสินตามหลักเหตุผล", "ปลอบใจและเป็นกลาง", "หาทางประนีประนอมในภาพรวม", "จับสังเกตอารมณ์แต่ละฝ่ายก่อน"],
+        scores: ["T", "F", "N", "S"]
+      },
+      {
+        text: "คุณได้กล่องปริศนา คุณจะ...",
+        options: ["วางแผนเปิดตามลำดับขั้น", "ลองเปิดแบบสุ่มๆ", "คิดเงื่อนไขที่เป็นไปได้", "ถามเพื่อนร่วมทางก่อน"],
+        scores: ["J", "P", "N", "F"]
+      },
+      {
+        text: "คุณเจอบันทึกที่เขียนครึ่งเดียว คุณจะ...",
+        options: ["จินตนาการตอนจบเอง", "วิเคราะห์โครงสร้างข้อมูล", "ปรึกษาคนอื่นก่อนสรุป", "ข้ามมันไปเพื่อเดินหน้าต่อ"],
+        scores: ["N", "T", "F", "P"]
+      },
+      {
+        text: "สุดท้ายก่อนถึงจุดหมาย คุณจะ...",
+        options: ["เก็บเงียบๆ ความรู้สึกไว้กับตัวเอง", "เฉลิมฉลองกับทุกคน", "เขียนบันทึกถึงการเดินทางนี้", "พูดคุยกับคนใหม่ๆ ที่เจอระหว่างทาง"],
+        scores: ["I", "E", "J", "E"]
+      }
+    ];
+
+    let currentQuestion = 0;
+    let answers = [];
+
+    function startQuiz() {
+      document.getElementById('intro').classList.add('hidden');
+      showQuestion(0);
+      document.getElementById('quiz').classList.remove('hidden');
+    }
+
+    function showQuestion(index) {
+      const q = questions[index];
+      document.getElementById('story').innerHTML = q.text;
+      const optionsDiv = document.getElementById('options');
+      optionsDiv.innerHTML = '';
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = opt;
+        btn.onclick = () => {
+          answers[index] = i;
+          if (index + 1 < questions.length) {
+            showQuestion(index + 1);
+          } else {
+            showResult();
+          }
+        };
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function showResult() {
+      // นับคะแนนแต่ละตัวอักษร
+      const mbtiCount = { I: 0, E: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 };
+      questions.forEach((q, idx) => {
+        const ansIdx = answers[idx];
+        if (q.scores && typeof ansIdx === "number") {
+          const key = q.scores[ansIdx];
+          mbtiCount[key]++;
+        }
+      });
+
+      // สร้าง MBTI type
+      const mbti =
+        (mbtiCount.I >= mbtiCount.E ? "I" : "E") +
+        (mbtiCount.N >= mbtiCount.S ? "N" : "S") +
+        (mbtiCount.T >= mbtiCount.F ? "T" : "F") +
+        (mbtiCount.J >= mbtiCount.P ? "J" : "P");
+
+      // แมป MBTI เป็นกลุ่มเมล็ดพันธุ์
+      let seedType = "";
+      let desc = "";
+      if (["INTJ", "INTP", "ENTJ", "ENTP"].includes(mbti)) {
+        seedType = "ผู้สร้างโลกในใจ";
+        desc = "คุณคือผู้สร้างโลกในใจ มีความคิดสร้างสรรค์ ชอบวางแผนและคิดนอกกรอบ พร้อมเปลี่ยนแปลงโลกด้วยจินตนาการของตนเอง";
+      } else if (["INFJ", "INFP", "ENFJ", "ENFP"].includes(mbti)) {
+        seedType = "ผู้เยียวยาหัวใจ";
+        desc = "คุณคือผู้เยียวยาหัวใจ มีความเข้าอกเข้าใจผู้อื่นสูง ชอบช่วยเหลือและสร้างแรงบันดาลใจให้คนรอบข้าง";
+      } else if (["ISTJ", "ISFJ", "ESTJ", "ESFJ"].includes(mbti)) {
+        seedType = "ผู้ยืนหยัดมั่นคง";
+        desc = "คุณคือผู้ยืนหยัดมั่นคง มีความรับผิดชอบ ซื่อสัตย์ ยึดมั่นในหลักการและเป็นที่พึ่งพาของคนรอบข้าง";
+      } else if (["ISTP", "ISFP", "ESTP", "ESFP"].includes(mbti)) {
+        seedType = "ผู้เดินทางตามใจ";
+        desc = "คุณคือผู้เดินทางตามใจ รักอิสระ ชอบผจญภัยและเรียนรู้สิ่งใหม่ ๆ จากประสบการณ์ตรง";
+      } else {
+        seedType = "ไม่สามารถระบุได้";
+        desc = "กรุณาทำแบบทดสอบใหม่อีกครั้ง";
+      }
+
+      // สร้างข้อความสำหรับแชร์
+      const shareText = `ฉันคือ "${seedType}" (${mbti}) ใน MBTI Story Quest! มาลองค้นหาเมล็ดพันธุ์ในใจของคุณกัน!`;
+
+      document.getElementById('quiz').innerHTML = `
+        <div class="result-box">
+          <h2>ผลลัพธ์ของคุณ</h2>
+          <div class="mbti-type"><b>MBTI ของคุณ:</b> <span>${mbti}</span></div>
+          <div class="seed-type">🌱 <span>${seedType}</span></div>
+          <div class="desc">${desc}</div>
+          <div class="share-buttons">
+            <button onclick="shareFB()" title="แชร์ Facebook">
+              <span style="font-size:1.2em;">📘</span> แชร์ Facebook
+            </button>
+            <button onclick="copyLink()" title="คัดลอกลิงก์">
+              <span style="font-size:1.2em;">🔗</span> คัดลอกลิงก์
+            </button>
+          </div>
+          <button class="option-btn" onclick="location.reload()">เริ่มใหม่</button>
+        </div>
+      `;
+
+      // ฟังก์ชันแชร์ Facebook
+      window.shareFB = function() {
+        const url = encodeURIComponent(window.location.href);
+        const text = encodeURIComponent(shareText);
+        window.open(
+          `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`,
+          '_blank'
+        );
+      };
+
+      // ฟังก์ชันคัดลอกลิงก์
+      window.copyLink = function() {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          alert("คัดลอกลิงก์เรียบร้อยแล้ว!");
+        });
+      };
+    }
+  </script>
+</body>
+</html>
